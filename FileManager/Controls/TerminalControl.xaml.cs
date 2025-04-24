@@ -21,6 +21,11 @@ namespace FileManager.Controls
             InitializeComponent();
             outputBuffer = new StringBuilder();
             this.Unloaded += TerminalControl_Unloaded;
+        }
+
+        public void Initialize(string initialDirectory = null)
+        {
+            currentDirectory = initialDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             InitializeTerminal();
         }
 
@@ -44,7 +49,7 @@ namespace FileManager.Controls
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.WorkingDirectory = currentDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                process.StartInfo.WorkingDirectory = currentDirectory;
                 
                 process.OutputDataReceived += Process_OutputDataReceived;
                 process.ErrorDataReceived += Process_ErrorDataReceived;
@@ -52,6 +57,12 @@ namespace FileManager.Controls
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
+                
+                if (!string.IsNullOrEmpty(currentDirectory))
+                {
+                    process.StandardInput.WriteLine($"cd \"{currentDirectory}\"");
+                    process.StandardInput.Flush();
+                }
                 
                 WritePrompt();
             }

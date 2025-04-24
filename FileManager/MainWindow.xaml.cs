@@ -782,6 +782,18 @@ namespace FileManager
             {
                 TerminalPanel.Visibility = Visibility.Visible;
                 TerminalPanel.Height = 200;
+                
+                // Initialize terminal with current directory
+                string currentPath = TabManager?.ActiveTab?.CurrentPath;
+                if (!string.IsNullOrEmpty(currentPath) && Directory.Exists(currentPath))
+                {
+                    TerminalControl.Initialize(currentPath);
+                }
+                else
+                {
+                    TerminalControl.Initialize();
+                }
+                
                 // Focus the terminal input when shown
                 TerminalControl.Focus();
             }
@@ -795,7 +807,7 @@ namespace FileManager
 
         private void UpdateTerminalWorkingDirectory(string path)
         {
-            if (TerminalPanel.Visibility == Visibility.Visible)
+            if (TerminalPanel.Visibility == Visibility.Visible && Directory.Exists(path))
             {
                 TerminalControl.SetWorkingDirectory(path);
             }
