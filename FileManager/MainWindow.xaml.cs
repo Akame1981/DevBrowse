@@ -17,6 +17,9 @@ using FileManager.Models;
 using FileManager.Services;
 using FileManager.ViewModels;
 using MaterialDesignThemes.Wpf;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using System.Xml;
 
 namespace FileManager
 {
@@ -142,6 +145,7 @@ namespace FileManager
             FileList.ItemsSource = fileSystemItems;
             
             SetupTreeViewEvents();
+            SetupSyntaxHighlighting();
             DataContext = this;
             
             // Set initial view to show drives
@@ -645,20 +649,84 @@ namespace FileManager
                     {
                         string content = File.ReadAllText(selectedItem.Path);
                         TextViewer.Text = content;
+                        
+                        // Set syntax highlighting with soft theme
+                        var highlighting = HighlightingManager.Instance.GetDefinition(GetHighlightingDefinition(extension));
+                        if (highlighting != null)
+                        {
+                            TextViewer.SyntaxHighlighting = highlighting;
+                            
+                            // Apply soft, muted color scheme
+                            var commentColor = highlighting.GetNamedColor("Comment");
+                            var stringColor = highlighting.GetNamedColor("String");
+                            var keywordColor = highlighting.GetNamedColor("Keyword");
+                            var typeColor = highlighting.GetNamedColor("Type");
+                            var numberColor = highlighting.GetNamedColor("Number");
+                            var methodCallColor = highlighting.GetNamedColor("MethodCall");
+                            var propertyColor = highlighting.GetNamedColor("Property");
+                            var tagColor = highlighting.GetNamedColor("Tag");
+                            var attributeColor = highlighting.GetNamedColor("Attribute");
+                            var defaultColor = highlighting.GetNamedColor("Default");
+
+                            // Soft, muted color palette
+                            if (commentColor != null) commentColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(92, 99, 112));  // Muted gray
+                            if (stringColor != null) stringColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(152, 195, 121));  // Soft green
+                            if (keywordColor != null) keywordColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(197, 165, 197));  // Soft purple
+                            if (typeColor != null) typeColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(229, 192, 123));  // Soft orange
+                            if (numberColor != null) numberColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(209, 154, 102));  // Soft brown
+                            if (methodCallColor != null) methodCallColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(97, 175, 239));  // Soft blue
+                            if (propertyColor != null) propertyColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(97, 175, 239));  // Soft blue
+                            if (tagColor != null) tagColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(224, 108, 117));  // Soft red
+                            if (attributeColor != null) attributeColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(229, 192, 123));  // Soft orange
+                            if (defaultColor != null) defaultColor.Foreground = new SimpleHighlightingBrush(System.Windows.Media.Color.FromRgb(171, 178, 191));  // Soft white
+                        }
+                        
+                        // Set dark background
+                        TextViewer.Background = new System.Windows.Media.SolidColorBrush(
+                            System.Windows.Media.Color.FromRgb(40, 44, 52));  // Dark background
+                        
+                        // Ensure line numbers are visible but subtle
+                        TextViewer.ShowLineNumbers = true;
+                        TextViewer.LineNumbersForeground = new System.Windows.Media.SolidColorBrush(
+                            System.Windows.Media.Color.FromRgb(92, 99, 112));  // Muted gray for line numbers
                     }
                     else
                     {
                         TextViewer.Text = "Preview not available for this file type.";
+                        TextViewer.SyntaxHighlighting = null;
                     }
                 }
                 catch (Exception ex)
                 {
                     TextViewer.Text = $"Error reading file: {ex.Message}";
+                    TextViewer.SyntaxHighlighting = null;
                 }
             }
             else
             {
                 TextViewer.Text = string.Empty;
+                TextViewer.SyntaxHighlighting = null;
+            }
+        }
+
+        private string GetHighlightingDefinition(string extension)
+        {
+            switch (extension)
+            {
+                case ".cs":
+                    return "C#";
+                case ".xaml":
+                case ".xml":
+                    return "XML";
+                case ".json":
+                case ".js":
+                    return "JavaScript";
+                case ".html":
+                    return "HTML";
+                case ".css":
+                    return "CSS";
+                default:
+                    return null;
             }
         }
 
@@ -686,6 +754,12 @@ namespace FileManager
             {
                 LoadDirectoryContents(TabManager.ActiveTab.CurrentPath);
             }
+        }
+
+        private void SetupSyntaxHighlighting()
+        {
+            // This method is no longer needed as we're applying colors directly in FileList_SelectionChanged
+            // Keeping it as a placeholder in case we need it in the future
         }
     }
 
