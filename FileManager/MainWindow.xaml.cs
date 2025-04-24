@@ -20,6 +20,7 @@ using MaterialDesignThemes.Wpf;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System.Xml;
+using System.Linq;
 
 namespace FileManager
 {
@@ -817,6 +818,54 @@ namespace FileManager
             if (TerminalPanel.Visibility == Visibility.Visible && Directory.Exists(path))
             {
                 TerminalControl.SetWorkingDirectory(path);
+            }
+        }
+
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(SearchTextBox.Text))
+            {
+                // If search box is empty, show all files
+                if (TabManager?.ActiveTab != null)
+                {
+                    LoadDirectoryContents(TabManager.ActiveTab.CurrentPath);
+                }
+                return;
+            }
+
+            FilterFiles(SearchTextBox.Text);
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+            {
+                FilterFiles(SearchTextBox.Text);
+            }
+        }
+
+        private void FilterFiles(string searchText)
+        {
+            if (TabManager?.ActiveTab == null) return;
+
+            string currentPath = TabManager.ActiveTab.CurrentPath;
+            if (string.IsNullOrEmpty(currentPath)) return;
+
+            try
+            {
+                var items = fileSystemService.GetDirectoryContents(currentPath, ShowHiddenFiles);
+                var filteredItems = items.Where(item => 
+                    item.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                fileSystemItems.Clear();
+                foreach (var item in filteredItems)
+                {
+                    fileSystemItems.Add(item);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                System.Windows.MessageBox.Show("Access denied to this directory.", "Access Denied", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
         }
     }

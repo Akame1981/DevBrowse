@@ -147,52 +147,90 @@
                 Padding="10" 
                 BorderThickness="0,0,0,1" 
                 BorderBrush="#404040">
-            <StackPanel Orientation="Horizontal">
-                <Button ToolTip="New Tab" Click="NewTabButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" 
-                                               Width="20" 
-                                               Height="20" 
-                                               VerticalAlignment="Center"/>
-                        <TextBlock Text="New Tab" 
-                                 Margin="5,0,0,0" 
-                                 VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button ToolTip="Task Manager"
-                        Click="OpenTaskManager_Click"
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <Button ToolTip="New Tab" Click="NewTabButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" 
+                                                   Width="20" 
+                                                   Height="20" 
+                                                   VerticalAlignment="Center"/>
+                            <TextBlock Text="New Tab" 
+                                     Margin="5,0,0,0" 
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button ToolTip="Task Manager"
+                            Click="OpenTaskManager_Click"
+                            Margin="10,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="MonitorDashboard" 
+                                                   Width="20" 
+                                                   Height="20" 
+                                                   VerticalAlignment="Center"/>
+                            <TextBlock Text="Task Manager" 
+                                     Margin="5,0,0,0" 
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <ToggleButton x:Name="ToggleHiddenFilesButton"
+                                 ToolTip="Show Hidden Files"
+                                 IsChecked="{Binding ShowHiddenFiles, Mode=TwoWay}"
+                                 Click="ToggleHiddenFiles_Click"
+                                 Margin="10,0,0,0"
+                                 Style="{StaticResource MaterialDesignFlatButton}"
+                                 Background="#FF1E1E1E"
+                                 BorderBrush="#FF404040"
+                                 BorderThickness="1">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon x:Name="HiddenFilesIcon"
+                                                   Kind="EyeOff"
+                                                   Width="20" 
+                                                   Height="20" 
+                                                   VerticalAlignment="Center"/>
+                            <TextBlock Text="Hidden Files" 
+                                     Margin="5,0,0,0" 
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ToggleButton>
+                </StackPanel>
+
+                <!-- Search Bar -->
+                <Border DockPanel.Dock="Right"
+                        Background="#FF1E1E1E"
+                        BorderBrush="#FF404040"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        Width="300"
                         Margin="10,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="MonitorDashboard" 
-                                               Width="20" 
-                                               Height="20" 
-                                               VerticalAlignment="Center"/>
-                        <TextBlock Text="Task Manager" 
-                                 Margin="5,0,0,0" 
-                                 VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <ToggleButton x:Name="ToggleHiddenFilesButton"
-                             ToolTip="Show Hidden Files"
-                             IsChecked="{Binding ShowHiddenFiles, Mode=TwoWay}"
-                             Click="ToggleHiddenFiles_Click"
-                             Margin="10,0,0,0"
-                             Style="{StaticResource MaterialDesignFlatButton}"
-                             Background="#FF1E1E1E"
-                             BorderBrush="#FF404040"
-                             BorderThickness="1">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon x:Name="HiddenFilesIcon"
-                                               Kind="EyeOff"
-                                               Width="20" 
-                                               Height="20" 
-                                               VerticalAlignment="Center"/>
-                        <TextBlock Text="Hidden Files" 
-                                 Margin="5,0,0,0" 
-                                 VerticalAlignment="Center"/>
-                    </StackPanel>
-                </ToggleButton>
-            </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBox x:Name="SearchTextBox"
+                                 Grid.Column="0"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="White"
+                                 Padding="5"
+                                 TextChanged="SearchTextBox_TextChanged"
+                                 materialDesign:HintAssist.Hint="Search files..."
+                                 materialDesign:TextFieldAssist.HasClearButton="True"/>
+                        
+                        <Button Grid.Column="1"
+                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Click="SearchButton_Click"
+                                ToolTip="Search">
+                            <materialDesign:PackIcon Kind="Magnify" 
+                                                   Width="20" 
+                                                   Height="20" 
+                                                   Foreground="White"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </DockPanel>
         </Border>
 
         <!-- Tab Header -->
