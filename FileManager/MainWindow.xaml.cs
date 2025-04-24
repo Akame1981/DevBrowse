@@ -109,34 +109,48 @@ namespace FileManager
             fileSystemService = new FileSystemService();
             fileSystemItems = new ObservableCollection<FileSystemItem>();
             FileList.ItemsSource = fileSystemItems;
-            LoadDrives();
+            
             SetupTreeViewEvents();
             DataContext = this;
-            // Start in the user's documents directory
-            currentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            LoadDirectoryContents(currentPath);
+            
+            // Set initial view to show drives
+            currentPath = "Drives";
+            LoadDirectoryContents("Drives");
         }
 
         private void SetupTreeViewEvents()
         {
             NavigationTree.SelectedItemChanged += NavigationTree_SelectedItemChanged;
+            
+            // Add This PC item to the tree
+            var thisPC = new TreeViewItem { Header = "This PC", Tag = "Drives" };
+            NavigationTree.Items.Add(thisPC);
+            
+            // Load drives under This PC
+            LoadDrivesIntoTree(thisPC);
         }
 
-        private void LoadDrives()
+        private void LoadDrivesIntoTree(TreeViewItem parentItem)
         {
-            NavigationTree.Items.Clear();
-            var thisPC = new TreeViewItem { Header = "This PC" };
-            NavigationTree.Items.Add(thisPC);
-
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            try
             {
-                var driveItem = new TreeViewItem 
-                { 
-                    Header = $"{drive.Name} ({drive.VolumeLabel})",
-                    Tag = drive.RootDirectory.FullName
-                };
-                thisPC.Items.Add(driveItem);
-                LoadSubDirectories(driveItem);
+                foreach (DriveInfo drive in DriveInfo.GetDrives())
+                {
+                    if (drive.IsReady)
+                    {
+                        var driveItem = new TreeViewItem 
+                        { 
+                            Header = $"{drive.Name} ({drive.VolumeLabel})",
+                            Tag = drive.RootDirectory.FullName
+                        };
+                        parentItem.Items.Add(driveItem);
+                        LoadSubDirectories(driveItem);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error loading drives: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
 
@@ -188,6 +202,34 @@ namespace FileManager
         private void LoadDirectoryContents(string path)
         {
             fileSystemItems.Clear();
+            
+            if (path == "Drives")
+            {
+                // Add all drives
+                try
+                {
+                    foreach (DriveInfo drive in DriveInfo.GetDrives())
+                    {
+                        if (drive.IsReady)
+                        {
+                            fileSystemItems.Add(new FileSystemItem
+                            {
+                                Name = $"{drive.Name} ({drive.VolumeLabel})",
+                                Path = drive.RootDirectory.FullName,
+                                Type = "Drive",
+                                DateModified = drive.RootDirectory.LastWriteTime,
+                                Size = drive.TotalSize
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Error loading drives: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+                return;
+            }
+
             try
             {
                 var items = fileSystemService.GetDirectoryContents(path, ShowHiddenFiles);
@@ -206,7 +248,7 @@ namespace FileManager
         {
             if (FileList.SelectedItem is FileSystemItem selectedItem)
             {
-                if (selectedItem.Type == "Directory")
+                if (selectedItem.Type == "Drive" || selectedItem.Type == "Directory")
                 {
                     LoadDirectoryContents(selectedItem.Path);
                 }
