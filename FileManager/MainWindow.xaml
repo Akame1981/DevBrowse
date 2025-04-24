@@ -83,11 +83,56 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+            <!-- Tab Control Styles -->
+            <Style TargetType="TabItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Grid>
+                                <Border Name="Border" 
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="#404040"
+                                        BorderThickness="0,0,0,2"
+                                        CornerRadius="3,3,0,0"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header" 
+                                                    HorizontalAlignment="Center" 
+                                                    VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#2D2D2D"/>
+                                    <Setter Property="BorderBrush" Value="#007ACC"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2D2D2D"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Path Display Style -->
+            <Style x:Key="PathDisplayStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#A0A0A0"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Margin" Value="10,5"/>
+                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -99,7 +144,7 @@
                 BorderThickness="0,0,0,1" 
                 BorderBrush="#404040">
             <StackPanel Orientation="Horizontal">
-                <Button ToolTip="New Tab">
+                <Button ToolTip="New Tab" Click="NewTabButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Plus" 
                                                Width="20" 
@@ -140,8 +185,76 @@
             </StackPanel>
         </Border>
 
+        <!-- Tab Header -->
+        <TabControl Grid.Row="1" 
+                    x:Name="TabControl"
+                    Background="#1E1E1E"
+                    BorderThickness="0"
+                    ItemsSource="{Binding TabManager.Tabs}"
+                    SelectedItem="{Binding TabManager.ActiveTab}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Folder" 
+                                               Width="16" 
+                                               Height="16"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding Name}" 
+                                 VerticalAlignment="Center"
+                                 MaxWidth="200"
+                                 TextTrimming="CharacterEllipsis"/>
+                        <Button Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Click="CloseTabButton_Click"
+                                Tag="{Binding}"
+                                Margin="5,0,0,0">
+                            <materialDesign:PackIcon Kind="Close" 
+                                                   Width="16" 
+                                                   Height="16"/>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
+
+        <!-- Current Path Display -->
+        <Border Grid.Row="2"
+                Background="#2D2D2D"
+                BorderThickness="0,0,0,1"
+                BorderBrush="#404040">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <materialDesign:PackIcon Kind="FolderOpen" 
+                                       Width="16" 
+                                       Height="16"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0,5,0"/>
+                <TextBox Grid.Column="1"
+                         x:Name="CurrentPathText"
+                         Text="{Binding TabManager.ActiveTab.CurrentPath, FallbackValue='This PC'}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Foreground="#E0E0E0"
+                         FontSize="12"
+                         Padding="5"
+                         IsReadOnly="True"
+                         VerticalContentAlignment="Center">
+                    <TextBox.Template>
+                        <ControlTemplate TargetType="TextBox">
+                            <TextBlock Text="{TemplateBinding Text}"
+                                     TextTrimming="CharacterEllipsis"
+                                     VerticalAlignment="Center"/>
+                        </ControlTemplate>
+                    </TextBox.Template>
+                </TextBox>
+            </Grid>
+        </Border>
+
         <!-- Main Content Area -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>

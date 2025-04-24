@@ -15,6 +15,7 @@ using System.Text;
 using System.Collections.Generic;
 using FileManager.Models;
 using FileManager.Services;
+using FileManager.ViewModels;
 using MaterialDesignThemes.Wpf;
 
 namespace FileManager
@@ -63,6 +64,7 @@ namespace FileManager
         private string clipboardPath;
         private bool isCutOperation;
         private readonly FileSystemService fileSystemService;
+        private TabManager tabManager;
 
         /// <summary>
         /// List of supported image file extensions.
@@ -77,6 +79,33 @@ namespace FileManager
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Gets or sets the tab manager for the application.
+        /// </summary>
+        public TabManager TabManager
+        {
+            get => tabManager;
+            set
+            {
+                if (tabManager != value)
+                {
+                    if (tabManager != null)
+                    {
+                        tabManager.OnActiveTabChanged -= TabManager_OnActiveTabChanged;
+                    }
+                    
+                    tabManager = value;
+                    
+                    if (tabManager != null)
+                    {
+                        tabManager.OnActiveTabChanged += TabManager_OnActiveTabChanged;
+                    }
+                    
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether hidden files should be shown.
         /// </summary>
         public bool ShowHiddenFiles
@@ -88,9 +117,9 @@ namespace FileManager
                 {
                     showHiddenFiles = value;
                     OnPropertyChanged();
-                    if (!string.IsNullOrEmpty(currentPath))
+                    if (TabManager?.ActiveTab != null)
                     {
-                        LoadDirectoryContents(currentPath);
+                        LoadDirectoryContents(TabManager.ActiveTab.CurrentPath);
                     }
                 }
             }
@@ -108,6 +137,7 @@ namespace FileManager
         {
             InitializeComponent();
             fileSystemService = new FileSystemService();
+            TabManager = new TabManager();
             fileSystemItems = new ObservableCollection<FileSystemItem>();
             FileList.ItemsSource = fileSystemItems;
             
@@ -251,9 +281,17 @@ namespace FileManager
                 string path = selectedItem.Tag as string;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    currentPath = path;
+                    TabManager.UpdateActiveTabPath(path);
                     LoadDirectoryContents(path);
                 }
+            }
+        }
+
+        private void TabManager_OnActiveTabChanged(object sender, EventArgs e)
+        {
+            if (TabManager?.ActiveTab != null)
+            {
+                LoadDirectoryContents(TabManager.ActiveTab.CurrentPath);
             }
         }
 
@@ -312,7 +350,9 @@ namespace FileManager
             {
                 if (selectedItem.Type == "Drive" || selectedItem.Type == "Directory")
                 {
-                    LoadDirectoryContents(selectedItem.Path);
+                    string newPath = selectedItem.Path;
+                    TabManager.UpdateActiveTabPath(newPath);
+                    LoadDirectoryContents(newPath);
                 }
                 else
                 {
@@ -625,6 +665,27 @@ namespace FileManager
         private bool IsTextFile(string extension)
         {
             return textExtensions.Contains(extension);
+        }
+
+        private void NewTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            TabManager.AddNewTab("This PC", "Drives");
+        }
+
+        private void CloseTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button button && button.Tag is Tab tab)
+            {
+                TabManager.CloseTab(tab);
+            }
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TabManager?.ActiveTab != null)
+            {
+                LoadDirectoryContents(TabManager.ActiveTab.CurrentPath);
+            }
         }
     }
 
