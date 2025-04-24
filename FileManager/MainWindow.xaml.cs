@@ -15,6 +15,10 @@ using System.Collections.Generic;
 
 namespace FileManager
 {
+    /// <summary>
+    /// Main window of the File Manager application.
+    /// Provides functionality for browsing, viewing, and managing files and directories.
+    /// </summary>
     public class FileSizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -40,16 +44,36 @@ namespace FileManager
         }
     }
 
+    /// <summary>
+    /// Main window of the File Manager application.
+    /// Provides functionality for browsing, viewing, and managing files and directories.
+    /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Current directory being displayed in the file manager.
+        /// </summary>
         private string currentPath;
         private ObservableCollection<FileSystemItem> fileSystemItems;
         private bool showHiddenFiles;
         private string clipboardPath;
         private bool isCutOperation;
 
+        /// <summary>
+        /// List of supported image file extensions.
+        /// </summary>
+        private readonly string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+        /// <summary>
+        /// List of supported text file extensions.
+        /// </summary>
+        private readonly string[] textExtensions = { ".txt", ".cs", ".xaml", ".xml", ".json", ".html", ".css", ".js" };
+
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether hidden files should be shown.
+        /// </summary>
         public bool ShowHiddenFiles
         {
             get => showHiddenFiles;
@@ -72,6 +96,9 @@ namespace FileManager
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the MainWindow class.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -80,6 +107,9 @@ namespace FileManager
             LoadDrives();
             SetupTreeViewEvents();
             DataContext = this;
+            // Start in the user's documents directory
+            currentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            LoadDirectoryContents(currentPath);
         }
 
         private void SetupTreeViewEvents()
@@ -146,6 +176,10 @@ namespace FileManager
             }
         }
 
+        /// <summary>
+        /// Loads and displays the contents of the specified directory.
+        /// </summary>
+        /// <param name="path">The path of the directory to load.</param>
         private void LoadDirectoryContents(string path)
         {
             fileSystemItems.Clear();
@@ -530,17 +564,38 @@ namespace FileManager
 
         private bool IsTextFile(string extension)
         {
-            string[] textExtensions = { ".txt", ".cs", ".xaml", ".xml", ".json", ".html", ".css", ".js", ".md", ".log", ".ini", ".config" };
             return textExtensions.Contains(extension);
         }
     }
 
+    /// <summary>
+    /// Represents a file system item in the file manager.
+    /// </summary>
     public class FileSystemItem
     {
+        /// <summary>
+        /// Gets or sets the name of the file system item.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path of the file system item.
+        /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the file system item.
+        /// </summary>
         public string Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time the file system item was last modified.
+        /// </summary>
         public DateTime DateModified { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the file system item.
+        /// </summary>
         public long Size { get; set; }
     }
 } 
