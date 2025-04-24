@@ -38,21 +38,31 @@
         
         <!-- Terminal content -->
         <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
             <ScrollViewer x:Name="OutputScrollViewer" 
+                          Grid.Row="0"
                           VerticalScrollBarVisibility="Auto"
-                          Background="#FF1E1E1E">
+                          Background="#FF1E1E1E"
+                          Margin="0,0,0,5">
                 <TextBlock x:Name="OutputTextBlock" 
                            Foreground="White"
                            FontFamily="Consolas"
-                           TextWrapping="Wrap"/>
+                           TextWrapping="Wrap"
+                           Margin="5"/>
             </ScrollViewer>
+            
             <TextBox x:Name="InputTextBox"
-                     VerticalAlignment="Bottom"
+                     Grid.Row="1"
                      Background="#FF2D2D2D"
                      Foreground="White"
                      FontFamily="Consolas"
                      BorderThickness="0"
                      Padding="5"
+                     Margin="5,0,5,5"
                      KeyDown="InputTextBox_KeyDown"/>
         </Grid>
     </Grid>
