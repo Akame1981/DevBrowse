@@ -96,5 +96,14 @@ namespace FileManager.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>The name of the tab.</returns>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 } 
