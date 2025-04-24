@@ -1,0 +1,330 @@
+<Window x:Class="FileManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:FileManager"
+        mc:Ignorable="d"
+        Title="Modern File Manager" Height="800" Width="1200"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="#1E1E1E"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:FileSizeConverter x:Key="FileSizeConverter"/>
+            
+            <!-- Custom Styles -->
+            <Style TargetType="TreeViewItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                <Setter Property="Padding" Value="5,2"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="#2D2D2D"/>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#2D2D2D"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="ListViewItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                <Setter Property="Padding" Value="5"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#2D2D2D"/>
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="#007ACC"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="GridViewColumnHeader">
+                <Setter Property="Background" Value="#1E1E1E"/>
+                <Setter Property="Foreground" Value="#A0A0A0"/>
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                <Setter Property="BorderBrush" Value="#404040"/>
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="3"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#2D2D2D"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Toolbar -->
+        <Border Grid.Row="0" 
+                Background="#2D2D2D" 
+                Padding="10" 
+                BorderThickness="0,0,0,1" 
+                BorderBrush="#404040">
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="New Tab">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" 
+                                               Width="20" 
+                                               Height="20" 
+                                               VerticalAlignment="Center"/>
+                        <TextBlock Text="New Tab" 
+                                 Margin="5,0,0,0" 
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button ToolTip="Task Manager"
+                        Click="OpenTaskManager_Click"
+                        Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="MonitorDashboard" 
+                                               Width="20" 
+                                               Height="20" 
+                                               VerticalAlignment="Center"/>
+                        <TextBlock Text="Task Manager" 
+                                 Margin="5,0,0,0" 
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <ToggleButton ToolTip="Show Hidden Files"
+                             IsChecked="{Binding ShowHiddenFiles, Mode=TwoWay}"
+                             Click="ToggleHiddenFiles_Click"
+                             Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Eye" 
+                                               Width="20" 
+                                               Height="20" 
+                                               VerticalAlignment="Center"/>
+                        <TextBlock Text="Show Hidden" 
+                                 Margin="5,0,0,0" 
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ToggleButton>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation Tree -->
+            <Border Grid.Column="0" 
+                    Background="#2D2D2D" 
+                    BorderThickness="0,0,1,0" 
+                    BorderBrush="#404040">
+                <TreeView x:Name="NavigationTree" 
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="10">
+                    <TreeViewItem IsExpanded="True">
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="DesktopClassic" 
+                                                       Width="20" 
+                                                       Height="20" 
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,5,0"/>
+                                <TextBlock Text="This PC" 
+                                         VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Harddisk" 
+                                                           Width="20" 
+                                                           Height="20" 
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,5,0"/>
+                                    <TextBlock Text="Local Disk (C:)" 
+                                             VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Harddisk" 
+                                                           Width="20" 
+                                                           Height="20" 
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,5,0"/>
+                                    <TextBlock Text="Local Disk (D:)" 
+                                             VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+                    </TreeViewItem>
+                </TreeView>
+            </Border>
+
+            <!-- File List and Text Viewer -->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- File List -->
+                <ListView x:Name="FileList" 
+                         Grid.Column="0"
+                         Background="#1E1E1E"
+                         BorderThickness="0"
+                         MouseDoubleClick="FileList_MouseDoubleClick"
+                         ContextMenuOpening="FileList_ContextMenuOpening"
+                         SelectionChanged="FileList_SelectionChanged">
+                    <ListView.ContextMenu>
+                        <ContextMenu Background="#2D2D2D" BorderBrush="#404040">
+                            <MenuItem Header="Open" Click="ContextMenu_Open_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="OpenInApp" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Open with..." Click="ContextMenu_OpenWith_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Application" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Copy" Click="ContextMenu_Copy_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentCopy" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Cut" Click="ContextMenu_Cut_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentCut" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Paste" Click="ContextMenu_Paste_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentPaste" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Rename" Click="ContextMenu_Rename_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Rename" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Delete" Click="ContextMenu_Delete_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Delete" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Properties" Click="ContextMenu_Properties_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Information" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Create New">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FilePlus" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Folder" Click="ContextMenu_NewFolder_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="FolderPlus" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Text File" Click="ContextMenu_NewTextFile_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="FileDocument" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Date Modified" Width="150" DisplayMemberBinding="{Binding DateModified, StringFormat=dd/MM/yyyy HH:mm}"/>
+                            <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding Type}"/>
+                            <GridViewColumn Header="Size" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Size, Converter={StaticResource FileSizeConverter}}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!-- Text Viewer -->
+                <GridSplitter Grid.Column="0" 
+                            Width="3" 
+                            Background="#404040" 
+                            HorizontalAlignment="Right" 
+                            VerticalAlignment="Stretch"/>
+                
+                <Grid Grid.Column="1" Background="#1E1E1E">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Text Viewer Header -->
+                    <Border Grid.Row="0" 
+                            Background="#2D2D2D" 
+                            Padding="10,5">
+                        <TextBlock Text="Preview" 
+                                 Foreground="#E0E0E0" 
+                                 FontWeight="Bold"/>
+                    </Border>
+                    
+                    <!-- Text Content -->
+                    <TextBox x:Name="TextViewer" 
+                            Grid.Row="1" 
+                            Background="#1E1E1E" 
+                            Foreground="#E0E0E0" 
+                            BorderThickness="0" 
+                            Padding="10" 
+                            TextWrapping="Wrap" 
+                            IsReadOnly="True" 
+                            VerticalScrollBarVisibility="Auto"
+                            FontFamily="Consolas"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window> 
