@@ -15,6 +15,7 @@ using System.Text;
 using System.Collections.Generic;
 using FileManager.Models;
 using FileManager.Services;
+using MaterialDesignThemes.Wpf;
 
 namespace FileManager
 {
@@ -123,7 +124,30 @@ namespace FileManager
             NavigationTree.SelectedItemChanged += NavigationTree_SelectedItemChanged;
             
             // Add This PC item to the tree
-            var thisPC = new TreeViewItem { Header = "This PC", Tag = "Drives" };
+            var thisPC = new TreeViewItem 
+            { 
+                Header = new StackPanel
+                {
+                    Orientation = System.Windows.Controls.Orientation.Horizontal,
+                    Children =
+                    {
+                        new MaterialDesignThemes.Wpf.PackIcon
+                        {
+                            Kind = MaterialDesignThemes.Wpf.PackIconKind.DesktopClassic,
+                            Width = 20,
+                            Height = 20,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(0, 0, 5, 0)
+                        },
+                        new TextBlock
+                        {
+                            Text = "This PC",
+                            VerticalAlignment = VerticalAlignment.Center
+                        }
+                    }
+                },
+                Tag = "Drives"
+            };
             NavigationTree.Items.Add(thisPC);
             
             // Load drives under This PC
@@ -140,7 +164,26 @@ namespace FileManager
                     {
                         var driveItem = new TreeViewItem 
                         { 
-                            Header = $"{drive.Name} ({drive.VolumeLabel})",
+                            Header = new StackPanel
+                            {
+                                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                                Children =
+                                {
+                                    new MaterialDesignThemes.Wpf.PackIcon
+                                    {
+                                        Kind = MaterialDesignThemes.Wpf.PackIconKind.Harddisk,
+                                        Width = 20,
+                                        Height = 20,
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                        Margin = new Thickness(0, 0, 5, 0)
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = $"{drive.Name} ({drive.VolumeLabel})",
+                                        VerticalAlignment = VerticalAlignment.Center
+                                    }
+                                }
+                            },
                             Tag = drive.RootDirectory.FullName
                         };
                         parentItem.Items.Add(driveItem);
@@ -171,7 +214,26 @@ namespace FileManager
 
                         var item = new TreeViewItem
                         {
-                            Header = dirInfo.Name,
+                            Header = new StackPanel
+                            {
+                                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                                Children =
+                                {
+                                    new MaterialDesignThemes.Wpf.PackIcon
+                                    {
+                                        Kind = MaterialDesignThemes.Wpf.PackIconKind.Folder,
+                                        Width = 20,
+                                        Height = 20,
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                        Margin = new Thickness(0, 0, 5, 0)
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = dirInfo.Name,
+                                        VerticalAlignment = VerticalAlignment.Center
+                                    }
+                                }
+                            },
                             Tag = directory
                         };
                         parentItem.Items.Add(item);
