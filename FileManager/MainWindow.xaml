@@ -172,16 +172,22 @@
                                  VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <ToggleButton ToolTip="Show Hidden Files"
+                <ToggleButton x:Name="ToggleHiddenFilesButton"
+                             ToolTip="Show Hidden Files"
                              IsChecked="{Binding ShowHiddenFiles, Mode=TwoWay}"
                              Click="ToggleHiddenFiles_Click"
-                             Margin="10,0,0,0">
+                             Margin="10,0,0,0"
+                             Style="{StaticResource MaterialDesignFlatButton}"
+                             Background="#FF1E1E1E"
+                             BorderBrush="#FF404040"
+                             BorderThickness="1">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Eye" 
+                        <materialDesign:PackIcon x:Name="HiddenFilesIcon"
+                                               Kind="EyeOff"
                                                Width="20" 
                                                Height="20" 
                                                VerticalAlignment="Center"/>
-                        <TextBlock Text="Show Hidden" 
+                        <TextBlock Text="Hidden Files" 
                                  Margin="5,0,0,0" 
                                  VerticalAlignment="Center"/>
                     </StackPanel>

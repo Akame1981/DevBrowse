@@ -387,9 +387,16 @@ namespace FileManager
 
         private void ToggleHiddenFiles_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(currentPath))
+            if (TabManager?.ActiveTab != null)
             {
-                LoadDirectoryContents(currentPath);
+                string currentPath = TabManager.ActiveTab.CurrentPath;
+                if (!string.IsNullOrEmpty(currentPath))
+                {
+                    LoadDirectoryContents(currentPath);
+                    HiddenFilesIcon.Kind = ShowHiddenFiles ? 
+                        MaterialDesignThemes.Wpf.PackIconKind.Eye : 
+                        MaterialDesignThemes.Wpf.PackIconKind.EyeOff;
+                }
             }
         }
 
