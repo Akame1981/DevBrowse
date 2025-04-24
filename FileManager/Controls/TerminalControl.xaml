@@ -13,59 +13,47 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <!-- Terminal Header -->
-        <Border Grid.Row="0" Background="#FF2D2D2D" Padding="5">
-            <StackPanel Orientation="Horizontal">
+        <!-- Header with title and buttons -->
+        <Border Grid.Row="0" Background="#FF1E1E1E" Padding="5">
+            <DockPanel>
                 <TextBlock Text="Terminal" Foreground="White" VerticalAlignment="Center"/>
-                <Button x:Name="CloseButton" Content="×" 
-                        Style="{StaticResource MaterialDesignFlatButton}"
-                        Foreground="White"
-                        Margin="5,0,0,0"
-                        Padding="5,0"
-                        Click="CloseButton_Click"/>
-            </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button x:Name="LockButton" 
+                            Click="LockButton_Click"
+                            Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            ToolTip="Lock/Unlock directory synchronization">
+                        <materialDesign:PackIcon Kind="LockOpen" 
+                                               Foreground="White"
+                                               x:Name="LockIcon"/>
+                    </Button>
+                    <Button x:Name="CloseButton" 
+                            Click="CloseButton_Click"
+                            Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            ToolTip="Close terminal">
+                        <materialDesign:PackIcon Kind="Close" Foreground="White"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
         </Border>
         
-        <!-- Terminal Content -->
-        <Grid Grid.Row="1" Background="#FF1E1E1E">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Output Area -->
+        <!-- Terminal content -->
+        <Grid Grid.Row="1">
             <ScrollViewer x:Name="OutputScrollViewer" 
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Auto">
+                          VerticalScrollBarVisibility="Auto"
+                          Background="#FF1E1E1E">
                 <TextBlock x:Name="OutputTextBlock" 
-                          FontFamily="Consolas"
-                          Foreground="#FFCCCCCC"
-                          TextWrapping="Wrap"
-                          Margin="5"/>
+                           Foreground="White"
+                           FontFamily="Consolas"
+                           TextWrapping="Wrap"/>
             </ScrollViewer>
-            
-            <!-- Input Area -->
-            <Grid Grid.Row="1" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Text="$" 
-                          Foreground="#FFCCCCCC"
-                          FontFamily="Consolas"
-                          VerticalAlignment="Center"
-                          Margin="0,0,5,0"/>
-                
-                <TextBox x:Name="InputTextBox"
-                         Grid.Column="1"
-                         Background="Transparent"
-                         Foreground="#FFCCCCCC"
-                         FontFamily="Consolas"
-                         BorderThickness="0"
-                         Padding="0"
-                         KeyDown="InputTextBox_KeyDown"/>
-            </Grid>
+            <TextBox x:Name="InputTextBox"
+                     VerticalAlignment="Bottom"
+                     Background="#FF2D2D2D"
+                     Foreground="White"
+                     FontFamily="Consolas"
+                     BorderThickness="0"
+                     Padding="5"
+                     KeyDown="InputTextBox_KeyDown"/>
         </Grid>
     </Grid>
 </UserControl> 

@@ -13,6 +13,7 @@ namespace FileManager.Controls
         private Process process;
         private StringBuilder outputBuffer;
         private string currentDirectory;
+        private bool isDirectoryLocked;
 
         public event EventHandler CloseRequested;
 
@@ -20,6 +21,7 @@ namespace FileManager.Controls
         {
             InitializeComponent();
             outputBuffer = new StringBuilder();
+            isDirectoryLocked = false;
             this.Unloaded += TerminalControl_Unloaded;
         }
 
@@ -144,9 +146,15 @@ namespace FileManager.Controls
             CloseRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        private void LockButton_Click(object sender, RoutedEventArgs e)
+        {
+            isDirectoryLocked = !isDirectoryLocked;
+            LockIcon.Kind = isDirectoryLocked ? MaterialDesignThemes.Wpf.PackIconKind.Lock : MaterialDesignThemes.Wpf.PackIconKind.LockOpen;
+        }
+
         public void SetWorkingDirectory(string directory)
         {
-            if (Directory.Exists(directory))
+            if (!isDirectoryLocked && Directory.Exists(directory))
             {
                 currentDirectory = directory;
                 if (process != null && !process.HasExited)
