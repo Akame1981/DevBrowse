@@ -156,45 +156,6 @@
                          Background="Transparent"
                          BorderThickness="0"
                          Padding="10">
-                    <TreeViewItem IsExpanded="True">
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="DesktopClassic" 
-                                                       Width="20" 
-                                                       Height="20" 
-                                                       VerticalAlignment="Center"
-                                                       Margin="0,0,5,0"/>
-                                <TextBlock Text="This PC" 
-                                         VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                        <TreeViewItem>
-                            <TreeViewItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Harddisk" 
-                                                           Width="20" 
-                                                           Height="20" 
-                                                           VerticalAlignment="Center"
-                                                           Margin="0,0,5,0"/>
-                                    <TextBlock Text="Local Disk (C:)" 
-                                             VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </TreeViewItem.Header>
-                        </TreeViewItem>
-                        <TreeViewItem>
-                            <TreeViewItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Harddisk" 
-                                                           Width="20" 
-                                                           Height="20" 
-                                                           VerticalAlignment="Center"
-                                                           Margin="0,0,5,0"/>
-                                    <TextBlock Text="Local Disk (D:)" 
-                                             VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </TreeViewItem.Header>
-                        </TreeViewItem>
-                    </TreeViewItem>
                 </TreeView>
             </Border>
 
