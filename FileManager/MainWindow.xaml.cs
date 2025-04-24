@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,6 +13,8 @@ using System.Runtime.CompilerServices;
 using Microsoft.Win32;
 using System.Text;
 using System.Collections.Generic;
+using FileManager.Models;
+using FileManager.Services;
 
 namespace FileManager
 {
@@ -58,6 +61,7 @@ namespace FileManager
         private bool showHiddenFiles;
         private string clipboardPath;
         private bool isCutOperation;
+        private readonly FileSystemService fileSystemService;
 
         /// <summary>
         /// List of supported image file extensions.
@@ -102,6 +106,7 @@ namespace FileManager
         public MainWindow()
         {
             InitializeComponent();
+            fileSystemService = new FileSystemService();
             fileSystemItems = new ObservableCollection<FileSystemItem>();
             FileList.ItemsSource = fileSystemItems;
             LoadDrives();
@@ -185,64 +190,15 @@ namespace FileManager
             fileSystemItems.Clear();
             try
             {
-                // Add parent directory
-                if (Path.GetPathRoot(path) != path)
+                var items = fileSystemService.GetDirectoryContents(path, ShowHiddenFiles);
+                foreach (var item in items)
                 {
-                    fileSystemItems.Add(new FileSystemItem
-                    {
-                        Name = "..",
-                        Path = Directory.GetParent(path)?.FullName,
-                        Type = "Directory",
-                        DateModified = DateTime.Now,
-                        Size = 0
-                    });
-                }
-
-                // Add directories
-                foreach (string directory in Directory.GetDirectories(path))
-                {
-                    try
-                    {
-                        var dirInfo = new DirectoryInfo(directory);
-                        if (!ShowHiddenFiles && (dirInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
-                            continue;
-
-                        fileSystemItems.Add(new FileSystemItem
-                        {
-                            Name = dirInfo.Name,
-                            Path = directory,
-                            Type = "Directory",
-                            DateModified = dirInfo.LastWriteTime,
-                            Size = 0
-                        });
-                    }
-                    catch (UnauthorizedAccessException) { }
-                }
-
-                // Add files
-                foreach (string file in Directory.GetFiles(path))
-                {
-                    try
-                    {
-                        var fileInfo = new FileInfo(file);
-                        if (!ShowHiddenFiles && (fileInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
-                            continue;
-
-                        fileSystemItems.Add(new FileSystemItem
-                        {
-                            Name = fileInfo.Name,
-                            Path = file,
-                            Type = fileInfo.Extension,
-                            DateModified = fileInfo.LastWriteTime,
-                            Size = fileInfo.Length
-                        });
-                    }
-                    catch (UnauthorizedAccessException) { }
+                    fileSystemItems.Add(item);
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show("Access denied to this directory.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Access denied to this directory.", "Access Denied", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
         }
 
@@ -266,7 +222,7 @@ namespace FileManager
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        System.Windows.MessageBox.Show($"Error opening file: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     }
                 }
             }
@@ -307,7 +263,7 @@ namespace FileManager
         {
             if (FileList.SelectedItem is FileSystemItem selectedItem && selectedItem.Type != "Directory")
             {
-                var dialog = new OpenFileDialog
+                var dialog = new Microsoft.Win32.OpenFileDialog
                 {
                     Title = "Select Program",
                     Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
@@ -326,7 +282,7 @@ namespace FileManager
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        System.Windows.MessageBox.Show($"Error opening file: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     }
                 }
             }
@@ -383,7 +339,7 @@ namespace FileManager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error during paste operation: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show($"Error during paste operation: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
         }
@@ -427,7 +383,7 @@ namespace FileManager
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error renaming: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        System.Windows.MessageBox.Show($"Error renaming: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     }
                 }
             }
@@ -437,13 +393,13 @@ namespace FileManager
         {
             if (FileList.SelectedItem is FileSystemItem selectedItem)
             {
-                var result = MessageBox.Show(
+                var result = System.Windows.MessageBox.Show(
                     $"Are you sure you want to delete '{selectedItem.Name}'?",
                     "Confirm Delete",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Warning);
 
-                if (result == MessageBoxResult.Yes)
+                if (result == System.Windows.MessageBoxResult.Yes)
                 {
                     try
                     {
@@ -459,7 +415,7 @@ namespace FileManager
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error deleting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        System.Windows.MessageBox.Show($"Error deleting: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     }
                 }
             }
@@ -488,7 +444,7 @@ namespace FileManager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error creating folder: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show($"Error creating folder: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
         }
@@ -506,7 +462,7 @@ namespace FileManager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error creating file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show($"Error creating file: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
         }
@@ -529,7 +485,7 @@ namespace FileManager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show($"Error opening file: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
         }
