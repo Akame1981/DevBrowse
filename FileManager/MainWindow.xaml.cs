@@ -151,6 +151,12 @@ namespace FileManager
             // Set initial view to show drives
             currentPath = "Drives";
             LoadDirectoryContents("Drives");
+            
+            // Initialize terminal
+            TerminalControl.CloseRequested += TerminalControl_CloseRequested;
+            
+            // Set initial terminal size
+            TerminalPanel.Height = 0;
         }
 
         private void SetupTreeViewEvents()
@@ -346,6 +352,9 @@ namespace FileManager
             {
                 System.Windows.MessageBox.Show("Access denied to this directory.", "Access Denied", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
+            
+            // Update terminal working directory
+            UpdateTerminalWorkingDirectory(path);
         }
 
         private void FileList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -760,6 +769,36 @@ namespace FileManager
         {
             // This method is no longer needed as we're applying colors directly in FileList_SelectionChanged
             // Keeping it as a placeholder in case we need it in the future
+        }
+
+        private void ToggleTerminalButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (TerminalPanel.Visibility == Visibility.Visible)
+            {
+                TerminalPanel.Visibility = Visibility.Collapsed;
+                TerminalPanel.Height = 0;
+            }
+            else
+            {
+                TerminalPanel.Visibility = Visibility.Visible;
+                TerminalPanel.Height = 200;
+                // Focus the terminal input when shown
+                TerminalControl.Focus();
+            }
+        }
+
+        private void TerminalControl_CloseRequested(object sender, EventArgs e)
+        {
+            TerminalPanel.Visibility = Visibility.Collapsed;
+            TerminalPanel.Height = 0;
+        }
+
+        private void UpdateTerminalWorkingDirectory(string path)
+        {
+            if (TerminalPanel.Visibility == Visibility.Visible)
+            {
+                TerminalControl.SetWorkingDirectory(path);
+            }
         }
     }
 

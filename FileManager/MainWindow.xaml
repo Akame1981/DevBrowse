@@ -6,6 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:FileManager"
+        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:controls="clr-namespace:FileManager.Controls"
         mc:Ignorable="d"
         Title="Modern File Manager" Height="800" Width="1200"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -135,6 +137,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Top Toolbar -->
@@ -388,18 +392,54 @@
                     </Border>
                     
                     <!-- Text Content -->
-                    <TextBox x:Name="TextViewer" 
+                    <avalonEdit:TextEditor x:Name="TextViewer" 
                             Grid.Row="1" 
                             Background="#1E1E1E" 
                             Foreground="#E0E0E0" 
                             BorderThickness="0" 
                             Padding="10" 
-                            TextWrapping="Wrap" 
                             IsReadOnly="True" 
                             VerticalScrollBarVisibility="Auto"
-                            FontFamily="Consolas"/>
+                            FontFamily="Consolas"
+                            ShowLineNumbers="True"
+                            SyntaxHighlighting="C#">
+                        <avalonEdit:TextEditor.Resources>
+                            <Style TargetType="avalonEdit:TextEditor">
+                                <Setter Property="WordWrap" Value="True"/>
+                            </Style>
+                        </avalonEdit:TextEditor.Resources>
+                        <avalonEdit:TextEditor.Margin>
+                            <Thickness Left="30" Right="0" Top="0" Bottom="0"/>
+                        </avalonEdit:TextEditor.Margin>
+                    </avalonEdit:TextEditor>
                 </Grid>
             </Grid>
         </Grid>
+
+        <!-- Terminal Panel -->
+        <GridSplitter Grid.Row="4" 
+                      Height="5" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Top"
+                      Background="#FF2D2D2D"
+                      ResizeBehavior="PreviousAndNext"/>
+
+        <Grid x:Name="TerminalPanel" 
+              Grid.Row="5" 
+              Height="200"
+              Visibility="Collapsed">
+            <controls:TerminalControl x:Name="TerminalControl"/>
+        </Grid>
+
+        <!-- Terminal Toggle Button -->
+        <Button x:Name="ToggleTerminalButton"
+                Grid.Row="5"
+                Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                Margin="5"
+                Click="ToggleTerminalButton_Click"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top">
+            <materialDesign:PackIcon Kind="Console" Width="20" Height="20"/>
+        </Button>
     </Grid>
 </Window> 
