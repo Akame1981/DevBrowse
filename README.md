@@ -3,7 +3,7 @@
 # 🚀 DevBrowse
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue?logo=windows)
-![License](https://img.shields.io/github/license/Akame1981/DevBrowse)
+![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Status](https://img.shields.io/badge/status-active_development-orange)
 
 **A modern, developer-centric file manager for Windows.**
@@ -124,7 +124,7 @@ We welcome contributions! Fork the repo, create a branch, and submit a pull requ
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
