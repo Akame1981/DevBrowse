@@ -72,6 +72,11 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -98,9 +103,29 @@
                 <Label Grid.Row="4" Grid.Column="0" Content="Modified:"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ModifiedDate}"/>
 
+                <!-- Last Accessed -->
+                <Label Grid.Row="5" Grid.Column="0" Content="Last Accessed:"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding LastAccessedDate}"/>
+
+                <!-- Extension -->
+                <Label Grid.Row="6" Grid.Column="0" Content="Extension:"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding FileExtension}"/>
+
+                <!-- Item Count -->
+                <Label Grid.Row="7" Grid.Column="0" Content="Contains:"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding ItemCount}"/>
+
+                <!-- Owner -->
+                <Label Grid.Row="8" Grid.Column="0" Content="Owner:"/>
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding FileOwner}"/>
+
+                <!-- File Version -->
+                <Label Grid.Row="9" Grid.Column="0" Content="Version:"/>
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding FileVersion}"/>
+
                 <!-- Attributes -->
-                <Label Grid.Row="5" Grid.Column="0" Content="Attributes:"/>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Attributes}"/>
+                <Label Grid.Row="10" Grid.Column="0" Content="Attributes:"/>
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding Attributes}"/>
             </Grid>
         </ScrollViewer>
 

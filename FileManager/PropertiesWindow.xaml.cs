@@ -3,6 +3,8 @@ using System.IO;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Security.Principal;
+using System.Diagnostics;
 
 namespace FileManager
 {
@@ -18,6 +20,11 @@ namespace FileManager
         public string ItemSize => FormatSize(item.Size);
         public string CreatedDate => GetCreatedDate();
         public string ModifiedDate => FormatDate(item.DateModified);
+        public string LastAccessedDate => GetLastAccessedDate();
+        public string FileExtension => GetFileExtension();
+        public string ItemCount => GetItemCount();
+        public string FileOwner => GetFileOwner();
+        public string FileVersion => GetFileVersion();
         public string Attributes => GetAttributes();
 
         public PropertiesWindow(FileSystemItem item)
@@ -69,6 +76,85 @@ namespace FileManager
             return "Unknown";
         }
 
+        private string GetLastAccessedDate()
+        {
+            try
+            {
+                if (File.Exists(item.Path))
+                {
+                    return FormatDate(File.GetLastAccessTime(item.Path));
+                }
+                else if (Directory.Exists(item.Path))
+                {
+                    return FormatDate(Directory.GetLastAccessTime(item.Path));
+                }
+            }
+            catch { }
+            return "Unknown";
+        }
+
+        private string GetFileExtension()
+        {
+            if (File.Exists(item.Path))
+            {
+                return Path.GetExtension(item.Path).ToUpper();
+            }
+            return "N/A";
+        }
+
+        private string GetItemCount()
+        {
+            if (Directory.Exists(item.Path))
+            {
+                try
+                {
+                    int fileCount = Directory.GetFiles(item.Path).Length;
+                    int dirCount = Directory.GetDirectories(item.Path).Length;
+                    return $"{fileCount + dirCount} items ({fileCount} files, {dirCount} folders)";
+                }
+                catch { }
+            }
+            return "N/A";
+        }
+
+        private string GetFileOwner()
+        {
+            try
+            {
+                if (File.Exists(item.Path))
+                {
+                    var fileInfo = new FileInfo(item.Path);
+                    var security = fileInfo.GetAccessControl();
+                    var owner = security.GetOwner(typeof(NTAccount));
+                    return owner?.Value ?? "Unknown";
+                }
+                else if (Directory.Exists(item.Path))
+                {
+                    var dirInfo = new DirectoryInfo(item.Path);
+                    var security = dirInfo.GetAccessControl();
+                    var owner = security.GetOwner(typeof(NTAccount));
+                    return owner?.Value ?? "Unknown";
+                }
+            }
+            catch { }
+            return "Unknown";
+        }
+
+        private string GetFileVersion()
+        {
+            if (File.Exists(item.Path) && (item.Path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || 
+                                          item.Path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    var versionInfo = FileVersionInfo.GetVersionInfo(item.Path);
+                    return versionInfo.FileVersion ?? "N/A";
+                }
+                catch { }
+            }
+            return "N/A";
+        }
+
         private string GetAttributes()
         {
             try
@@ -97,9 +183,8 @@ namespace FileManager
                         attributes.Append("System, ");
                 }
 
-                if (attributes.Length > 0)
-                    return attributes.ToString().TrimEnd(',', ' ');
-                return "Normal";
+                string result = attributes.ToString().TrimEnd(',', ' ');
+                return string.IsNullOrEmpty(result) ? "Normal" : result;
             }
             catch
             {
