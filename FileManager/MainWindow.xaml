@@ -336,7 +336,7 @@
                          ContextMenuOpening="FileList_ContextMenuOpening"
                          SelectionChanged="FileList_SelectionChanged">
                     <ListView.ContextMenu>
-                        <ContextMenu Background="#2D2D2D" BorderBrush="#404040">
+                        <ContextMenu>
                             <MenuItem Header="Open" Click="ContextMenu_Open_Click">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="OpenInApp" />
@@ -345,6 +345,21 @@
                             <MenuItem Header="Open with..." Click="ContextMenu_OpenWith_Click">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="Application" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Open in Terminal" Click="ContextMenu_OpenInTerminal_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Console" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Open in VSCode" Click="ContextMenu_OpenInVSCode_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="VisualStudio" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Open as Admin" Click="ContextMenu_OpenAsAdmin_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ShieldAccount" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
@@ -363,6 +378,16 @@
                                     <materialDesign:PackIcon Kind="ContentPaste" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="Copy Full Path" Click="ContextMenu_CopyFullPath_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileLink" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Copy Relative Path" Click="ContextMenu_CopyRelativePath_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileLinkOutline" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <Separator />
                             <MenuItem Header="Rename" Click="ContextMenu_Rename_Click">
                                 <MenuItem.Icon>
@@ -374,12 +399,64 @@
                                     <materialDesign:PackIcon Kind="Delete" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <Separator />
-                            <MenuItem Header="Properties" Click="ContextMenu_Properties_Click">
+                            <MenuItem Header="Move To..." Click="ContextMenu_MoveTo_Click">
                                 <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="Information" />
+                                    <materialDesign:PackIcon Kind="FolderMove" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="Copy To..." Click="ContextMenu_CopyTo_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentCopy" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Compress to ZIP" Click="ContextMenu_CompressToZip_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ZipBox" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Run Script" Click="ContextMenu_RunScript_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Script" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Compare With..." Click="ContextMenu_CompareWith_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Compare" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Add to Favorites" Click="ContextMenu_AddToFavorites_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Star" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Git">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Git" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Stage" Click="ContextMenu_GitStage_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Plus" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Unstage" Click="ContextMenu_GitUnstage_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Minus" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="View Diff" Click="ContextMenu_GitViewDiff_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Compare" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Commit" Click="ContextMenu_GitCommit_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="SourceCommit" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                            <Separator />
                             <MenuItem Header="Create New">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="FilePlus" />
@@ -394,6 +471,12 @@
                                         <materialDesign:PackIcon Kind="FileDocument" />
                                     </MenuItem.Icon>
                                 </MenuItem>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Properties" Click="ContextMenu_Properties_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Information" />
+                                </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
                     </ListView.ContextMenu>
